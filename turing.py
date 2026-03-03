@@ -157,6 +157,14 @@ class TuringMachine:
         while not (self.accept or self.reject):
             self.cycle()
 
+    def __str__(self):
+        parts = [f"state='{self.state}'"]
+        if self.accept:
+            parts.append("ACCEPT")
+        if self.reject:
+            parts.append("REJECT")
+        return " ".join(parts)
+
     @property
     def tape(self):
         return self._tape
@@ -294,8 +302,5 @@ if __name__ == '__main__':
 
     machine = builder.build()
     machine.run()
-    if machine.accept:
-        print("ACCEPT")
-    if machine.reject:
-        print("REJECT")
+    print(machine)
     print('right:', ''.join([r'\0' if x is None else x for x in machine.tape.right]))
