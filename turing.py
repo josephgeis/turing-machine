@@ -30,20 +30,33 @@ class Tape:
 
     @property
     def head(self):
+        if len(self._spaces) == 0:
+            return None
         return self._spaces[self._head]
 
     def backward(self):
-        if self._head == 0:
+        if self._head == 0 and len(self._spaces) == 0:
+            pass
+        elif self._head == 0:
             self._spaces.insert(0, None)
         else:
+            if self._head == len(self._spaces) - 1 and self.head is None:
+                self._spaces.pop(self._head)
             self._head -= 1
 
     def forward(self):
-        self._head += 1
-        if self._head >= len(self._spaces):
-            self._spaces.append(None)
+        if self._head == 0 and len(self._spaces) == 0:
+            pass
+        elif self._head == 0 and self.head is None:
+                self._spaces.pop(self._head)
+        else:
+            self._head += 1
+            if self._head >= len(self._spaces):
+                self._spaces.append(None)
 
     def write(self, value):
+        if len(self._spaces) == 0:
+            self._spaces.append(None)
         self._spaces[self._head] = value
 
     def clear(self):

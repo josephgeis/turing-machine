@@ -1,0 +1,33 @@
+STATE q1
+RULE 0 := 0 R q1
+RULE 1 := 1 R q2
+
+STATE q2
+RULE 0 := 0 R q2
+RULE \0 := \0 L q3
+
+STATE q3
+RULE 0 := \0 L q4
+RULE 1 := \0 L q7
+
+STATE q4
+RULE 0 := 0 L q4
+RULE 1 := 1 L q5
+
+STATE q5
+RULE 0 := 0 L q5
+RULE \0 := \0 R q6
+
+STATE q6
+RULE 0 := \0 R q1
+RULE 1 := \0 L accept
+
+STATE q7
+RULE 0 := 0 L q7
+RULE \0 := \0 R accept
+
+STATE accept
+
+ACCEPT accept
+START q1
+LOAD 00010000
