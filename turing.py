@@ -164,6 +164,8 @@ class TuringMachine:
                 self.tape.backward()
             case Tape.RIGHT:
                 self.tape.forward()
+        if next_state not in self.states:
+            raise RuntimeError("State not added to machine.")
         self.state = next_state
 
     def run(self):
