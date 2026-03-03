@@ -2,18 +2,6 @@ from enum import Enum
 from typing import Dict, List
 
 
-class TapeSlot:
-    def __init__(self, value=None, left=None, right=None):
-        self.value = value
-
-        if left is not None and not isinstance(left, TapeSlot):
-            raise TypeError(f"Expected argument 'left' to be instance of TapeSlot or None, not {type(left).__name__}.")
-        self.left = left
-
-        if right is not None and not isinstance(right, TapeSlot):
-            raise TypeError(f"Expected argument 'right' to be instance of TapeSlot or None, not {type(right).__name__}.")
-
-
 class Tape:
     class Direction(Enum):
         LEFT = 'L'
