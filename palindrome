@@ -1,0 +1,47 @@
+STATE q0
+RULE a := * R q1
+RULE b := # R q5
+RULE \0 := \0 L q7
+
+STATE q1
+RULE a := a R q1
+RULE b := b R q1
+RULE \0 := \0 R q2
+
+STATE q2
+RULE a := a R q2
+RULE b := b R q2
+RULE \0 := a L q3
+
+STATE q3
+RULE a := a L q3
+RULE b := b L q3
+RULE \0 := \0 L q4
+
+STATE q4
+RULE a := a L q4
+RULE b := b L q4
+RULE * := a R q0
+RULE # := b R q0
+
+STATE q5
+RULE a := a R q5
+RULE b := b R q5
+RULE \0 := \0 R q6
+
+STATE q6
+RULE a := a R q6
+RULE b := b R q6
+RULE \0 := b L q3
+
+STATE q7
+RULE a := a L q7
+RULE b := b L q7
+RULE \0 := \0 R q8
+
+STATE q8
+
+ACCEPT q8
+START q0
+
+LOAD abbab
