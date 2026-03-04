@@ -15,7 +15,7 @@ The easiest way is probably using the machine_def format defined below:
     a file is invalid if there is a `RULE` directive with no `STATE` directive above it. 
   - `read`: character to read off the tape
   - `write`: character to write onto the tape
-  - `shift`: `L` or `R` to shift left or right on the tape
+  - `shift`: `L`, `R`, or `N` to shift left, shift right, or no-op.
   - `next`: state to move to
 - `ACCEPT [name]`: sets the accept state
   - `name`: name of accept state

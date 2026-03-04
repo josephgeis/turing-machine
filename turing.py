@@ -6,9 +6,11 @@ class Tape:
     class Direction(Enum):
         LEFT = 'L'
         RIGHT = 'R'
+        NOOP = 'N'
 
     LEFT = Direction.LEFT
     RIGHT = Direction.RIGHT
+    NOOP = Direction.NOOP
 
     def __init__(self, init=None):
         self._left = []
@@ -140,7 +142,7 @@ class TuringMachine:
 
     @property
     def reject(self):
-        return self.state is self.reject_state
+        return self.state is self.reject_state or self.state is None
 
     def load_tape(self, tape):
         self.tape.load_tape(tape)
@@ -157,7 +159,10 @@ class TuringMachine:
         if res:
             write, direction, next_state = res
         else:
-            raise RuntimeError("Machine crashed.")
+            write = self.tape.head
+            direction = Tape.NOOP
+            next_state = None
+
 
         self.tape.write(write)
         match direction:
@@ -165,8 +170,10 @@ class TuringMachine:
                 self.tape.backward()
             case Tape.RIGHT:
                 self.tape.forward()
-        if next_state not in self.states:
-            raise RuntimeError("State not added to machine.")
+            case Tape.NOOP:
+                pass
+        if not (next_state in self.states or next_state is None):
+            raise RuntimeError(f"State '{next_state}' not added to machine.")
         self.state = next_state
 
     def run(self):
