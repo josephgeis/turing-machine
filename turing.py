@@ -96,12 +96,13 @@ class State:
 
 
 class TuringMachine:
-    def __init__(self, initial_tape=None):
+    def __init__(self, initial_tape=None, hook=None):
         self._tape = Tape(initial_tape)
         self.states = set()
         self.state = None
         self.accept_state = None
         self.reject_state = None
+        self.hook = hook
 
     def add_state(self, state):
         self.states.add(state)
@@ -110,6 +111,10 @@ class TuringMachine:
         state = State(f"q{len(self.states)}")
         self.states.add(state)
         return state
+
+    @staticmethod
+    def info_hook(machine):
+        print(f"state={machine.state}, left={machine._tape.left}, right={machine._tape.right}")
 
     def set_state(self, state):
         if state and state not in self.states:
@@ -144,6 +149,9 @@ class TuringMachine:
         if self.state is None:
             raise RuntimeError("Current state is None.")
 
+        if self.hook:
+            self.hook(self)
+
         res = self.state.cycle(self.tape.head)
 
         if res:
@@ -164,6 +172,9 @@ class TuringMachine:
     def run(self):
         while not (self.accept or self.reject):
             self.cycle()
+
+        if self.hook:
+            self.hook(self)
 
     def __str__(self):
         parts = [f"state='{self.state}'"]
@@ -186,6 +197,7 @@ class MachineBuilder:
         self.reject_state = None
         self.start_state = None
         self.init_tape = None
+        self.hook = None
 
     def read_line(self, line: str):
         command, *args = line.split() or ["PASS"]
@@ -219,6 +231,13 @@ class MachineBuilder:
                 if len(args) != 1:
                     raise RuntimeError(f"Invalid load definition: '{line.rstrip('\n')}'")
                 self.init_tape = args[0].replace(r"\0", "\x00")
+            case "INFO":
+                if len(args) != 1 or args[0] not in ["ON", "OFF"]:
+                    raise RuntimeError(f"Invalid info directive: '{line.rstrip('\n')}")
+                if args[0] == "ON":
+                    self.hook = TuringMachine.info_hook
+                else:
+                    self.hook = None
             case "PASS":
                 pass
             case _:
@@ -227,7 +246,7 @@ class MachineBuilder:
 
     def build(self):
         esc = lambda x: None if x == r"\0" else x
-        machine = TuringMachine()
+        machine = TuringMachine(hook=self.hook)
         states: Dict[str, State] = {}
         for state in self.unresolved_states.keys():
             states[state] = State(state)

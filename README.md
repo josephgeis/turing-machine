@@ -25,6 +25,7 @@ The easiest way is probably using the machine_def format defined below:
   - `name`: name of the start state
 - `LOAD [string]`: loads the give string onto the tape
   - `string`: string to load
+- `INFO [ON|OFF]`: turns on or off printing out machine information each cycle.
 - `PASS`: does nothing; a blank line is the same as a `PASS` directive
 
 `\0` can be used to represent a blank value. Spaces are not a valid character.
