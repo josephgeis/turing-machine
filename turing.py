@@ -11,62 +11,67 @@ class Tape:
     RIGHT = Direction.RIGHT
 
     def __init__(self, init=None):
-        self._spaces = [None]
-        self._head = 0
+        self._left = []
+        self._right = []
         if init:
             self.load_tape(init)
 
     @property
     def head(self):
-        if len(self._spaces) == 0:
+        if len(self._right) == 0:
             return None
-        return self._spaces[self._head]
+        else:
+            return self._right[0]
+
+    def _trim(self):
+        while self._left[:1] == [None]:
+            self._left.pop(0)
+        while self._right[-1:] == [None]:
+            self._right.pop(-1)
 
     def backward(self):
-        if self._head == 0 and len(self._spaces) == 0:
+        if len(self._right) == 0 and len(self._left) == 0:
             pass
-        elif self._head == 0:
-            self._spaces.insert(0, None)
+        elif len(self._right) > 0 and len(self._left) == 0:
+            self._right.insert(0, None)
         else:
-            if self._head == len(self._spaces) - 1 and self.head is None:
-                self._spaces.pop(self._head)
-            self._head -= 1
+            self._right.insert(0, self._left.pop(-1))
+        self._trim()
 
     def forward(self):
-        if self._head == 0 and len(self._spaces) == 0:
+        if len(self._right) == 0 and len(self._left) == 0:
             pass
-        elif self._head == 0 and self.head is None:
-                self._spaces.pop(self._head)
+        elif len(self._right) == 0 and len(self._left) > 0:
+            self._left.append(None)
         else:
-            self._head += 1
-            if self._head >= len(self._spaces):
-                self._spaces.append(None)
+            self._left.append(self._right.pop(0))
+        self._trim()
 
     def write(self, value):
-        if len(self._spaces) == 0:
-            self._spaces.append(None)
-        self._spaces[self._head] = value
+        if len(self._right) == 0:
+            if value is not None:
+                self._right.insert(0, value)
+        elif len(self._right) == 1 and value is None:
+            self._right.pop(0)
+        else:
+            self._right[0] = value
 
     def clear(self):
         self.write(None)
 
     @property
     def right(self):
-        return self._spaces[self._head:]
+        return self._right[:]
 
     @property
     def left(self):
-        return self._spaces[:self._head]
+        return self._left[:]
 
     def load_tape(self, string):
-        start_pos = self._head
-        for char in string:
-            if char == "\x00":
-                self.write(None)
-            else:
-                self.write(char)
-            self.forward()
-        self._head = start_pos
+        esc_null = lambda c: None if c == "\x00" else c
+        chars = [esc_null(c) for c in string]
+        self._right = chars + self._right[len(chars):]
+        self._trim()
 
 
 class State:
